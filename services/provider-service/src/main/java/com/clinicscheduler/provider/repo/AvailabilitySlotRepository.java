@@ -27,7 +27,7 @@ public interface AvailabilitySlotRepository extends JpaRepository<AvailabilitySl
               and (:location is null or p.clinicLocation = :location)
               and s.startTime >= :from
               and s.startTime < :to
-            order by s.startTime asc, s.id asc
+            order by s.startTime asc, s.providerId asc
             """,
             countQuery = """
             select count(s)

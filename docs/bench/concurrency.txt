@@ -1,0 +1,40 @@
+Starting MySQL...
+ Container clinicscheduler-mysql Running 
+provider-service already UP on 8081
+appointment-service already UP on 8082
+
+=== ClinicScheduler double-booking harness ===
+appointment-service : http://localhost:8082
+provider-service    : http://localhost:8081
+concurrency         : 50 simultaneous requests per slot
+slots               : 10
+date_utc            : 2026-11-13T08:54:07.580313Z
+
+[1/10] racing 50 bookings for slot 2099...
+slot 2099    provider=7    start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=1035ms
+[2/10] racing 50 bookings for slot 2399...
+slot 2399    provider=8    start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=2769ms
+[3/10] racing 50 bookings for slot 2699...
+slot 2699    provider=9    start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=1653ms
+[4/10] racing 50 bookings for slot 2999...
+slot 2999    provider=10   start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=1076ms
+[5/10] racing 50 bookings for slot 3299...
+slot 3299    provider=11   start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=783ms
+[6/10] racing 50 bookings for slot 3599...
+slot 3599    provider=12   start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=588ms
+[7/10] racing 50 bookings for slot 3899...
+slot 3899    provider=13   start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=354ms
+[8/10] racing 50 bookings for slot 4199...
+slot 4199    provider=14   start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=554ms
+[9/10] racing 50 bookings for slot 4499...
+slot 4499    provider=15   start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=298ms
+[10/10] racing 50 bookings for slot 4799...
+slot 4799    provider=16   start=2026-11-14T11:00  success=1 conflicts=49 other=0 rows=1 elapsed=320ms
+
+=== aggregate over 10 slots, 50 concurrent bookings per slot ===
+successful bookings : 10 (expected 10)
+409 conflicts       : 490 (expected 490)
+other errors        : 0 (expected 0)
+appointment rows    : 10 (expected 10)
+total wall time     : 11963ms
+invariant           : PASS - exactly one winner per slot
