@@ -1,0 +1,30 @@
+# Build output
+target/
+node_modules/
+dist/
+.angular/
+
+# Logs
+*.log
+logs/
+
+# Secrets / local env
+.env
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Test / tooling output
+coverage/
+surefire-reports/
+failsafe-reports/
+*.exec
+playwright-report/
+test-results/
+
+# Temp
+*.tmp
+*.pid
