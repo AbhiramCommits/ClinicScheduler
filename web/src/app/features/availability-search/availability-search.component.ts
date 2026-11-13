@@ -109,7 +109,7 @@ export class AvailabilitySearchComponent implements OnInit {
   }
 
   selectSlot(slot: AvailabilitySlot): void {
-    const { specialty, location, from, to } = this.form.getRawValue();
+    const { from, to } = this.form.getRawValue();
     void this.router.navigate(['/book'], {
       queryParams: {
         slotId: slot.id,

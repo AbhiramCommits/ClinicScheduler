@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
@@ -11,9 +11,8 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ProviderApiService {
+  private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.providerApiBaseUrl;
-
-  constructor(private readonly http: HttpClient) {}
 
   searchAvailability(params: SearchAvailabilityParams): Observable<PageResponse<AvailabilitySlot>> {
     let httpParams = new HttpParams()

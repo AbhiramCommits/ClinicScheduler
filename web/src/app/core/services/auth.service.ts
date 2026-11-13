@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthUser, LoginRequest, LoginResponse, Role } from '../models/api.models';
@@ -9,10 +9,10 @@ const USER_KEY = 'clinic.user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+
   private readonly userSubject = new BehaviorSubject<AuthUser | null>(this.restoreUser());
   readonly user$ = this.userSubject.asObservable();
-
-  constructor(private readonly http: HttpClient) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
     const request: LoginRequest = { email, password };

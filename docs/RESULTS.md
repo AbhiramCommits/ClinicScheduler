@@ -126,15 +126,35 @@ This is the end-to-end proof: provider-service's `@Version` optimistic lock admi
 and appointment-service's `uk_slot_active` unique key makes the database the final authority
 (50 requests, 1 row).
 
-## 3. Test counts
+## 3. Test counts and coverage
 
-Measured from the reports in each service's `target/failsafe-reports/` and the Karma run:
+Measured from the Surefire/Failsafe reports in each service's `target/` directory, the Karma run,
+and the JaCoCo `jacoco.csv` reports.
 
-| Suite | Tests | Result |
-| --- | ---: | --- |
-| provider-service Testcontainers `AvailabilitySearchIT` | 7 | 7 passed |
-| appointment-service Testcontainers `BookingIT` | 8 | 8 passed |
-| Angular/Karma/Jasmine specs | 19 | 19 passed |
+| Service / suite | Tests | Passed |
+| --- | ---: | ---: |
+| provider-service `AvailabilityServiceTest` (unit) | 7 | 7 |
+| provider-service `ProviderControllerTest` (MockMvc) | 12 | 12 |
+| provider-service `AvailabilitySearchIT` (Testcontainers) | 7 | 7 |
+| provider-service `ConcurrencyIT` (Testcontainers, N=20) | 1 | 1 |
+| **provider-service total** | **27** | **27** |
+| appointment-service `BookingServiceTest` (unit) | 13 | 13 |
+| appointment-service `AppointmentControllerTest` (MockMvc) | 10 | 10 |
+| appointment-service `AuthControllerTest` (MockMvc) | 5 | 5 |
+| appointment-service `BookingIT` (Testcontainers + WireMock) | 8 | 8 |
+| appointment-service `ConcurrencyIT` (Testcontainers, N=20) | 1 | 1 |
+| **appointment-service total** | **37** | **37** |
+| **Angular / Karma / Jasmine** | **19** | **19** |
 
-These counts grow in Step 6 when unit, MockMvc and concurrency integration tests are added; the
-final totals are recorded in the README.
+JaCoCo line coverage (all classes, from `target/site/jacoco/jacoco.csv`):
+
+| Service | Lines covered | Line coverage |
+| --- | ---: | ---: |
+| provider-service | 190 / 230 | **82.6%** |
+| appointment-service | 270 / 319 | **84.6%** |
+
+Angular Karma coverage (`ng test --code-coverage`): statements 74.07%, branches 55.69%,
+functions 60%, **lines 73.81%** (172/233).
+
+The scaled-down `ConcurrencyIT`s enforce the same invariant in CI: 20 simultaneous bookings for
+one slot produce exactly one winner and one row in Testcontainers MySQL.

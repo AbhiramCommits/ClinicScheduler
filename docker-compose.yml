@@ -1,11 +1,13 @@
+name: clinicscheduler
+
 services:
   mysql:
     image: mysql:8.0
     container_name: clinicscheduler-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-clinic_root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?copy .env.example to .env and set MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${DB_USER:-clinic}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-clinic_pass}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?copy .env.example to .env and set DB_PASSWORD}
       MYSQL_DATABASE: provider_db
     ports:
       - "3306:3306"
@@ -17,13 +19,96 @@ services:
       - mysql-data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-clinic_root}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 30
       start_period: 30s
 
-  # provider-service and appointment-service are added in Step 7.
+  provider-service:
+    build:
+      context: ./services/provider-service
+    container_name: clinicscheduler-provider
+    environment:
+      SERVER_PORT: 8081
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: provider_db
+      DB_USER: ${DB_USER:-clinic}
+      DB_PASSWORD: ${DB_PASSWORD:?copy .env.example to .env and set DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?copy .env.example to .env and set JWT_SECRET}
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  appointment-service:
+    build:
+      context: ./services/appointment-service
+    container_name: clinicscheduler-appointment
+    environment:
+      SERVER_PORT: 8082
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: appointment_db
+      DB_USER: ${DB_USER:-clinic}
+      DB_PASSWORD: ${DB_PASSWORD:?copy .env.example to .env and set DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?copy .env.example to .env and set JWT_SECRET}
+      PROVIDER_SERVICE_URL: http://provider-service:8081
+    ports:
+      - "8082:8082"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8082/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  seed:
+    image: mysql:8.0
+    container_name: clinicscheduler-seed
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PWD: ${DB_PASSWORD:?copy .env.example to .env and set DB_PASSWORD}
+      DB_USER: ${DB_USER:-clinic}
+      DB_NAME: provider_db
+    volumes:
+      - ./db/seed/generate_seed.sql:/seed/generate_seed.sql:ro
+      - ./db/seed/seed-if-empty.sh:/seed/seed-if-empty.sh:ro
+    entrypoint: ["/bin/sh", "/seed/seed-if-empty.sh"]
+    depends_on:
+      provider-service:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./web
+    container_name: clinicscheduler-web
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      provider-service:
+        condition: service_healthy
+      appointment-service:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/healthz | grep -q ok"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
 volumes:
   mysql-data:

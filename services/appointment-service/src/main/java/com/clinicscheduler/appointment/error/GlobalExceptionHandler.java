@@ -15,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -49,7 +50,8 @@ public class GlobalExceptionHandler {
                 .body(ApiError.of("VALIDATION_ERROR", "Request validation failed", request, fields));
     }
 
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class,
+            MissingServletRequestParameterException.class})
     public ResponseEntity<ApiError> handleBadInput(Exception ex, HttpServletRequest request) {
         return ResponseEntity.badRequest()
                 .body(ApiError.of("INVALID_REQUEST", "Malformed or unparseable request body/parameter",
