@@ -8,6 +8,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+if [ -f "$ROOT/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "$ROOT/.env"
+  set +a
+fi
+
 CONTAINER="${MYSQL_CONTAINER:-clinicscheduler-mysql}"
 DB_USER="${DB_USER:-clinic}"
 DB_PASSWORD="${DB_PASSWORD:-clinic_pass}"
