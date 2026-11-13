@@ -19,6 +19,8 @@
 
     <properties>
         <java.version>21</java.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
+        <docker.api.version>1.44</docker.api.version>
     </properties>
 
     <dependencies>
@@ -119,6 +121,9 @@
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>
+                    <systemPropertyVariables>
+                        <api.version>${docker.api.version}</api.version>
+                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>

@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -142,6 +143,15 @@ class AvailabilitySearchIT {
     }
 
     @Test
+    void reserveWithoutTokenIsUnauthorized() throws Exception {
+        Long openSlotId = jdbc.queryForObject("SELECT id FROM availability_slots LIMIT 1", Long.class);
+        mockMvc.perform(post("/api/availability/{id}/reserve", openSlotId))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error").value("UNAUTHORIZED"));
+    }
+
+    @Test
+    @WithMockUser(username = "staff@clinic.test", roles = "STAFF")
     void sequentialReserveReturns200Then409() throws Exception {
         Long openSlotId = jdbc.queryForObject("""
                 SELECT id FROM availability_slots
@@ -163,6 +173,7 @@ class AvailabilitySearchIT {
     }
 
     @Test
+    @WithMockUser(username = "staff@clinic.test", roles = "STAFF")
     void releaseMakesTheSlotOpenAgain() throws Exception {
         Long openSlotId = jdbc.queryForObject("""
                 SELECT id FROM availability_slots
