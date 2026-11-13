@@ -6,7 +6,7 @@ spring:
   application:
     name: provider-service
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:provider_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:provider_db}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8
     username: ${DB_USER:clinic}
     password: ${DB_PASSWORD:clinic_pass}
     hikari:

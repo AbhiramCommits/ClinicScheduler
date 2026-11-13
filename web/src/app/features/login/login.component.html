@@ -1,0 +1,51 @@
+<section class="auth-shell">
+  <div class="auth-panel">
+    <div class="brand-mark">CS</div>
+    <h1>ClinicScheduler</h1>
+    <p class="muted">Sign in to find a specialist and book a time.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" formControlName="email" autocomplete="username" placeholder="you@clinic.test" />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <small class="field-error">
+            @if (form.controls.email.errors?.['required']) { Email is required. }
+            @else { Enter a valid email address. }
+          </small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input type="password" formControlName="password" autocomplete="current-password" placeholder="••••••••" />
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <small class="field-error">
+            @if (form.controls.password.errors?.['required']) { Password is required. }
+            @else { Password must be at least 6 characters. }
+          </small>
+        }
+      </label>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+      }
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid || submitting">
+        {{ submitting ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+
+    <div class="demo-box">
+      <p class="demo-title">Demo accounts</p>
+      <button type="button" class="demo-link" (click)="useDemo('staff@clinic.test', 'staff123')">
+        staff&#64;clinic.test / staff123 <span class="pill">STAFF</span>
+      </button>
+      <button type="button" class="demo-link" (click)="useDemo('patient@clinic.test', 'patient123')">
+        patient&#64;clinic.test / patient123 <span class="pill">PATIENT</span>
+      </button>
+    </div>
+
+    <p class="muted small">Availability search and booking are protected — sign in to continue.</p>
+  </div>
+</section>

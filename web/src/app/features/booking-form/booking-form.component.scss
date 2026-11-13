@@ -1,0 +1,165 @@
+.back-link {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: var(--teal-700);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.slot-summary {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 20px 24px;
+
+  h3 {
+    margin: 0 0 2px;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.summary-date {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 24px;
+  border-right: 1px solid var(--line);
+
+  strong {
+    font-size: 1.2rem;
+  }
+}
+
+.slot-day {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-700);
+  font-weight: 600;
+}
+
+.conflict-banner {
+  display: flex;
+  gap: 14px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  border: 1px solid #f1c27d;
+  background: #fff8ec;
+  border-radius: var(--radius-md);
+
+  p {
+    margin: 6px 0 12px;
+    color: var(--ink-700);
+  }
+}
+
+.conflict-icon {
+  flex: 0 0 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #f3a712;
+  color: #fff;
+  font-weight: 800;
+}
+
+.alternative-list {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+
+.alternative {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--teal-400);
+  }
+}
+
+.booking-form {
+  padding: 24px;
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: 1.05rem;
+  }
+}
+
+.patient-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.success-card {
+  display: flex;
+  gap: 16px;
+  padding: 24px;
+  border-color: #b7e4cb;
+  background: #f2fbf6;
+
+  h3 {
+    margin: 0 0 6px;
+  }
+
+  p {
+    margin: 0 0 14px;
+  }
+}
+
+.success-check {
+  flex: 0 0 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--teal-600);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.success-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .slot-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary-date {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .patient-grid {
+    grid-template-columns: 1fr;
+  }
+}

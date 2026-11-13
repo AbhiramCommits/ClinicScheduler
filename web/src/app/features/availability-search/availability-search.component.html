@@ -1,0 +1,106 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Availability</p>
+      <h1>Find a specialist</h1>
+      <p class="muted">Search open 30-minute appointments across the practice network.</p>
+    </div>
+    <a routerLink="/appointments" class="btn btn-quiet">My appointments</a>
+  </header>
+
+  <form class="card filter-card" [formGroup]="form" (ngSubmit)="search(0)" novalidate>
+    <div class="filter-grid">
+      <label class="field">
+        <span>Specialty</span>
+        <select formControlName="specialty">
+          <option value="">Any specialty</option>
+          @for (specialty of specialties; track specialty) {
+            <option [value]="specialty">{{ specialty }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Location</span>
+        <select formControlName="location">
+          <option value="">Any location</option>
+          @for (location of locations; track location) {
+            <option [value]="location">{{ location }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="field">
+        <span>From</span>
+        <input type="date" formControlName="from" />
+      </label>
+
+      <label class="field">
+        <span>To</span>
+        <input type="date" formControlName="to" />
+      </label>
+
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="loading || form.invalid">
+          {{ loading ? 'Searching…' : 'Search' }}
+        </button>
+        <button type="button" class="btn btn-quiet" (click)="resetFilters()">Reset</button>
+      </div>
+    </div>
+
+    @if (formError('dateRange')) {
+      <p class="field-error">The end date must be after the start date.</p>
+    }
+  </form>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+  }
+
+  <div class="results-header">
+    <p class="muted">
+      @if (!loading && totalElements > 0) {
+        {{ totalElements }} open {{ totalElements === 1 ? 'appointment' : 'appointments' }}
+        · page {{ page + 1 }} of {{ totalPages }}
+      } @else if (!loading) {
+        No open appointments for these filters.
+      }
+    </p>
+  </div>
+
+  @if (loading) {
+    <div class="card loading-card">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Checking the schedule…</span>
+    </div>
+  } @else if (slots.length === 0) {
+    <div class="card empty-card">
+      <h3>No times match</h3>
+      <p class="muted">Try a broader date range, another specialty, or a different clinic location.</p>
+      <button type="button" class="btn btn-quiet" (click)="resetFilters()">Clear filters</button>
+    </div>
+  } @else {
+    <div class="slot-grid">
+      @for (slot of slots; track slot.id) {
+        <article class="card slot-card">
+          <div class="slot-time">
+            <span class="slot-day">{{ slot.startTime | date: 'EEE, MMM d' }}</span>
+            <strong>{{ slot.startTime | date: 'h:mm a' }}</strong>
+            <span class="muted small">– {{ slot.endTime | date: 'h:mm a' }}</span>
+          </div>
+          <div class="slot-body">
+            <h3>{{ slot.providerName }}</h3>
+            <p class="muted">{{ slot.specialty }} · {{ slot.clinicLocation }}</p>
+          </div>
+          <button type="button" class="btn btn-primary" (click)="selectSlot(slot)">Select time</button>
+        </article>
+      }
+    </div>
+
+    <nav class="pager" aria-label="Availability pages">
+      <button type="button" class="btn btn-quiet" [disabled]="page === 0" (click)="previousPage()">Previous</button>
+      <span class="muted">Page {{ page + 1 }} of {{ totalPages }}</span>
+      <button type="button" class="btn btn-quiet" [disabled]="page + 1 >= totalPages" (click)="nextPage()">Next</button>
+    </nav>
+  }
+</section>

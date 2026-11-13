@@ -1,0 +1,100 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">{{ isStaff ? 'Practice schedule' : 'Your care' }}</p>
+      <h1>{{ isStaff ? 'Appointments' : 'My appointments' }}</h1>
+      <p class="muted">
+        @if (isStaff) {
+          Review bookings across the practice and cancel on a patient's behalf.
+        } @else {
+          Everything you have booked, newest first.
+        }
+      </p>
+    </div>
+    <a routerLink="/search" class="btn btn-primary">Find a time</a>
+  </header>
+
+  @if (isStaff) {
+    <div class="card staff-filter">
+      <label class="field">
+        <span>Filter by patient ID</span>
+        <input type="text" [formControl]="filterControl" placeholder="patient-1 (blank for all)" />
+      </label>
+      <button type="button" class="btn btn-quiet" [disabled]="loading" (click)="load()">Apply filter</button>
+    </div>
+  }
+
+  @if (noticeMessage) {
+    <div class="alert alert-success" role="status">{{ noticeMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+  }
+
+  @if (loading) {
+    <div class="card loading-card">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Loading appointments…</span>
+    </div>
+  } @else if (appointments.length === 0) {
+    <div class="card empty-card">
+      <h3>No appointments yet</h3>
+      <p class="muted">Book a specialist and your confirmation will appear here.</p>
+      <a routerLink="/search" class="btn btn-primary">Browse availability</a>
+    </div>
+  } @else {
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            @if (isStaff) {
+              <th>Patient</th>
+            }
+            <th>When</th>
+            <th>Provider</th>
+            <th>Slot</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (appointment of appointments; track appointment.id) {
+            <tr>
+              @if (isStaff) {
+                <td>
+                  <strong>{{ appointment.patientName }}</strong>
+                  <span class="muted small block">{{ appointment.patientId }}</span>
+                </td>
+              }
+              <td>
+                <strong>{{ appointment.startTime | date: 'MMM d, y' }}</strong>
+                <span class="muted small block">
+                  {{ appointment.startTime | date: 'h:mm a' }} – {{ appointment.endTime | date: 'h:mm a' }}
+                </span>
+              </td>
+              <td>Provider #{{ appointment.providerId }}</td>
+              <td class="muted">#{{ appointment.slotId }}</td>
+              <td>
+                <span [class]="statusClass(appointment.status)">{{ appointment.status }}</span>
+              </td>
+              <td class="actions-cell">
+                @if (appointment.status === 'BOOKED') {
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-small"
+                    [disabled]="cancellingId !== null"
+                    (click)="cancel(appointment)"
+                  >
+                    {{ cancellingId === appointment.id ? 'Cancelling…' : 'Cancel' }}
+                  </button>
+                } @else {
+                  <span class="muted small">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

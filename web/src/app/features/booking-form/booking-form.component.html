@@ -1,0 +1,106 @@
+<section class="page narrow">
+  <a routerLink="/search" class="back-link">← Back to availability</a>
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Book</p>
+      <h1>Confirm your appointment</h1>
+      <p class="muted">Your time is held only after the booking completes.</p>
+    </div>
+  </header>
+
+  <div class="card slot-summary">
+    <div class="summary-date">
+      <span class="slot-day">{{ startTime | date: 'EEEE, MMMM d' }}</span>
+      <strong>{{ startTime | date: 'h:mm a' }} – {{ endTime | date: 'h:mm a' }}</strong>
+    </div>
+    <div>
+      <h3>{{ providerName }}</h3>
+      <p class="muted">{{ specialty }} · {{ clinicLocation }}</p>
+    </div>
+  </div>
+
+  @if (conflict) {
+    <div class="conflict-banner" role="alert">
+      <div class="conflict-icon" aria-hidden="true">!</div>
+      <div>
+        <strong>That slot was just taken — pick another time.</strong>
+        <p>
+          Someone else completed this booking first. Nothing was charged and no appointment was
+          created for you.
+        </p>
+        @if (loadingAlternatives) {
+          <p class="muted">Looking for other open times…</p>
+        } @else if (alternatives.length > 0) {
+          <div class="alternative-list">
+            @for (slot of alternatives.slice(0, 3); track slot.id) {
+              <button type="button" class="alternative" (click)="useAlternative(slot)">
+                <span>{{ slot.startTime | date: 'EEE, MMM d · h:mm a' }}</span>
+                <span class="muted">{{ slot.providerName }}</span>
+              </button>
+            }
+          </div>
+        } @else if (!slotStillAvailable) {
+          <p class="muted">That time is no longer offered. Choose another slot from the search page.</p>
+        }
+        <a routerLink="/search" class="btn btn-quiet">See all open times</a>
+      </div>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+  }
+
+  @if (confirmed) {
+    <div class="card success-card" role="status">
+      <div class="success-check" aria-hidden="true">✓</div>
+      <div>
+        <h3>Appointment confirmed</h3>
+        <p class="muted">
+          {{ confirmed.startTime | date: 'EEEE, MMMM d, y · h:mm a' }} with
+          {{ providerName }}. Confirmation #{{ confirmed.id }}.
+        </p>
+        <div class="success-actions">
+          <a routerLink="/appointments" class="btn btn-primary">View my appointments</a>
+          <a routerLink="/search" class="btn btn-quiet">Book another time</a>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <form class="card booking-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <h2>Patient details</h2>
+
+      <div class="patient-grid">
+        <label class="field">
+          <span>Patient ID</span>
+          <input type="text" formControlName="patientId" placeholder="patient-1" />
+          @if (form.controls.patientId.touched && form.controls.patientId.invalid) {
+            <small class="field-error">Patient ID is required.</small>
+          }
+        </label>
+
+        <label class="field">
+          <span>Patient name</span>
+          <input type="text" formControlName="patientName" placeholder="Pat Patient" />
+          @if (form.controls.patientName.touched && form.controls.patientName.invalid) {
+            <small class="field-error">Patient name is required.</small>
+          }
+        </label>
+      </div>
+
+      @if (auth.role() === 'PATIENT') {
+        <p class="muted small">Booked under your signed-in patient record.</p>
+      } @else {
+        <p class="muted small">Staff can book on behalf of any patient.</p>
+      }
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || submitting">
+          {{ submitting ? 'Booking…' : 'Confirm booking' }}
+        </button>
+        <button type="button" class="btn btn-quiet" (click)="cancelEditing()">Cancel</button>
+      </div>
+    </form>
+  }
+</section>

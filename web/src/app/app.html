@@ -1,0 +1,42 @@
+<div class="app-frame">
+  <header class="topbar">
+    <a routerLink="/search" class="brand">
+      <span class="brand-mark">CS</span>
+      <span class="brand-text">ClinicScheduler</span>
+    </a>
+
+    @if (user$ | async; as user) {
+      <nav class="nav" aria-label="Main navigation">
+        <a routerLink="/search" routerLinkActive="active">Find a time</a>
+        <a routerLink="/appointments" routerLinkActive="active">My appointments</a>
+        @if (user.role === 'STAFF') {
+          <a routerLink="/staff/appointments" routerLinkActive="active">Practice schedule</a>
+        }
+      </nav>
+
+      <div class="session">
+        <span class="session-user">
+          <span class="avatar" aria-hidden="true">{{ user.name.charAt(0) }}</span>
+          <span class="session-meta">
+            <span>{{ user.name }}</span>
+            <small>{{ user.role }}</small>
+          </span>
+        </span>
+        <button type="button" class="btn btn-quiet btn-small" (click)="logout()">Sign out</button>
+      </div>
+    } @else {
+      <nav class="nav" aria-label="Main navigation">
+        <a routerLink="/login" routerLinkActive="active">Sign in</a>
+      </nav>
+    }
+  </header>
+
+  <main>
+    <router-outlet />
+  </main>
+
+  <footer class="footer">
+    <span>ClinicScheduler · demo specialty-practice scheduling</span>
+    <span>Availability search is indexed; bookings are single-winner.</span>
+  </footer>
+</div>
